@@ -9,10 +9,15 @@ namespace DynDnsDistributor.Controllers
     [Route("[controller]")]
     public class UpdateController : Controller
     {
-        // GET update?hostname=<hostname>&myip=<ipaddr>
+        // GET update?myip=<ipaddr>
         [HttpGet]
-        public IActionResult Get([FromQuery(Name = "hostname")]string hostname, [FromQuery(Name = "myip")]string myip)
+        public IActionResult Get([FromQuery(Name = "myip")]string myip)
         {
+            if (string.IsNullOrWhiteSpace(myip))
+                return StatusCode(400);
+
+            //Request.Headers["Authorization"];
+
             return StatusCode(501);
         }
     }

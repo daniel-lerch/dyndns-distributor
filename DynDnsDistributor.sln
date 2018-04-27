@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D21FC30C-A5A6-4193-B2D4-9BDB018AA7AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynDnsDistributor", "src\DynDnsDistributor\DynDnsDistributor.csproj", "{6774C56C-9C02-4D96-990B-E25C3E4DE40E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DynDnsDistributor", "src\DynDnsDistributor\DynDnsDistributor.csproj", "{6774C56C-9C02-4D96-990B-E25C3E4DE40E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

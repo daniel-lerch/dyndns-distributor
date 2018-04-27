@@ -1,0 +1,19 @@
+{
+    "Accounts": [
+        {
+            "Username": null,
+            "Password": null,
+            "UpdateUrls": [
+                "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=example.feste-ip.net&myip=<ipaddr>"
+            ]
+        },
+        {
+            "Username": "proxyuser",
+            "Password": "localnetpw123",
+            "UpdateUrls": [
+                "https://example.de:password123@dyndns.strato.com/nic/update?hostname=example.de&myip=<ipaddr>",
+                "https://example.de:password123@dyndns.strato.com/nic/update?hostname=sub.example.de&myip=<ipaddr>"
+            ]
+        }
+    ]
+}
