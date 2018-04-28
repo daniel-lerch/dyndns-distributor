@@ -1,13 +1,10 @@
 {
+    "IpRetrieveUrl": "https://api.ipify.org/",
+    "IpPollingInterval": null,
+    "LocalAccounts": [ "proxyuser" ],
     "Accounts": [
         {
-            "Username": null,
-            "Password": null,
-            "UpdateUrls": [
-                "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=example.feste-ip.net&myip=<ipaddr>"
-            ]
-        },
-        {
+            "Hostname": "update.any",
             "Username": "proxyuser",
             "Password": "localnetpw123",
             "UpdateUrls": [

@@ -1,0 +1,25 @@
+{
+    "IpRetrieveUrl": "https://api.ipify.org/",
+    "IpPollingInterval": 30000,
+    "LocalAccounts": [ null, "proxyuser" ],
+    "Accounts": [
+        {
+            "Hostname": null,
+            "Username": null,
+            "Password": null,
+            "UpdateUrls": [
+                "http://proxyuser:localnetpw123@localhost:53734/update?hostname=test.de&myip=<ipaddr>",
+                "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=test.feste-ip.net"
+            ]
+        },
+        {
+            "Hostname": "test.de",
+            "Username": "proxyuser",
+            "Password": "localnetpw123",
+            "UpdateUrls": [
+                "https://example.de:password123@dyndns.strato.com/nic/update?hostname=example.de&myip=<ipaddr>",
+                "https://example.de:password123@dyndns.strato.com/nic/update?hostname=sub.example.de&myip=<ipaddr>"
+            ]
+        }
+    ]
+}
