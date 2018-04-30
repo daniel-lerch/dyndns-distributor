@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
+    <Content Condition="'$(Configuration)'=='Release'" Update="dyndnsconfig.Development.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
   <ItemGroup>

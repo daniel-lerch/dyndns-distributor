@@ -15,16 +15,22 @@ namespace DynDnsDistributor.Config
 {
     public static class Manager
     {
+#if DEBUG
+        private const string ConfigFilePath = "dyndnsconfig.Development.json";
+#else
+        private const string ConfigFilePath = "dyndnsconfig.json";
+#endif
+        private const int EventDelay = 500;
+
         public static ConfigFile CurrentConfig { get; private set; }
         private static FileSystemWatcher watcher;
         private static Timer pollingTimer;
-        private const int EventDelay = 500;
         private static string configPath;
 
         public static void Initialize()
         {
             pollingTimer = new Timer(async o => await UpdateLocalAccounts(), null, -1, -1);
-            configPath = Path.Combine(Environment.CurrentDirectory, "dyndnsconfig.json");
+            configPath = Path.Combine(Environment.CurrentDirectory, ConfigFilePath);
 
             Load();
 
@@ -32,7 +38,7 @@ namespace DynDnsDistributor.Config
             {
                 Path = Environment.CurrentDirectory,
                 NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,
-                Filter = "dyndnsconfig.json"
+                Filter = ConfigFilePath
             };
 
             Observable.FromEventPattern<EventHandler<FileSystemEventArgs>, FileSystemEventArgs>(
