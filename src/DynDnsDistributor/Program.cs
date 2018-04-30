@@ -14,7 +14,6 @@ namespace DynDnsDistributor
     {
         public static void Main(string[] args)
         {
-            Config.Manager.Initialize();
             BuildWebHost(args).Run();
         }
 

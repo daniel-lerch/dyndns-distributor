@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DynDnsDistributor.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,9 +14,12 @@ namespace DynDnsDistributor
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private ILoggerFactory _loggerFactory;
+
+        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             Configuration = configuration;
+            _loggerFactory = loggerFactory;
         }
 
         public IConfiguration Configuration { get; }
@@ -24,6 +28,7 @@ namespace DynDnsDistributor
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddSingleton<IConfigManager>(new ConfigManager(_loggerFactory.CreateLogger<ConfigManager>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

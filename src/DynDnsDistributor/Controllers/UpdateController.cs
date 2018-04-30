@@ -5,8 +5,10 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using DynDnsDistributor.Network;
+using DynDnsDistributor.Config;
+using DynDnsDistributor.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 
 namespace DynDnsDistributor.Controllers
@@ -14,6 +16,15 @@ namespace DynDnsDistributor.Controllers
     [Route("[controller]")]
     public class UpdateController : Controller
     {
+        private IConfigManager _configManager;
+        private ILogger<UpdateController> _logger;
+
+        public UpdateController(IConfigManager configManager, ILogger<UpdateController> logger)
+        {
+            _configManager = configManager;
+            _logger = logger;
+        }
+
         // GET update?myip=<ipaddr>
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery(Name = "hostname")]string hostname, [FromQuery(Name = "myip")]string myip)
@@ -47,7 +58,7 @@ namespace DynDnsDistributor.Controllers
                 password = authHeader.Substring(split + 1);
             }
 
-            Config.ConfigFile.Account account = Config.Manager.CurrentConfig.Accounts
+            ConfigFile.Account account = _configManager.CurrentConfig.Accounts
                 .Where(a => a.Hostname == hostname &&
                 a.Username == username && 
                 a.Password == password).FirstOrDefault();
@@ -58,9 +69,7 @@ namespace DynDnsDistributor.Controllers
                 return StatusCode(401);
             }
 
-            account.CurrentIpAddress = IPAddress.Parse(myip);
-
-            await account.Update();
+            await _configManager.UpdateAccount(account, IPAddress.Parse(myip));
             return StatusCode(200);
         }
     }
