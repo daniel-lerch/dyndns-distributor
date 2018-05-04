@@ -11,6 +11,7 @@ namespace DynDnsDistributor.Config
     {
         public string IpRetrieveUrl { get; set; }
         public int? IpPollingInterval { get; set; }
+        public string UserAgent { get; set; }
         public IList<string> LocalAccounts { get; set; }
         public IList<Account> Accounts { get; set; }
 
@@ -23,6 +24,8 @@ namespace DynDnsDistributor.Config
 
             [JsonIgnore]
             public IPAddress CurrentIpAddress { get; set; }
+            [JsonIgnore]
+            public IPAddress PublishedIpAddress { get; set; }
         }
     }
 }

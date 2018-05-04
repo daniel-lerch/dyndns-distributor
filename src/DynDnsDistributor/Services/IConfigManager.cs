@@ -10,7 +10,6 @@ namespace DynDnsDistributor.Services
     public interface IConfigManager
     {
         ConfigFile CurrentConfig { get; }
-        Task UpdateAccount(ConfigFile.Account account);
-        Task UpdateAccount(ConfigFile.Account account, IPAddress ipaddr);
+        Task UpdateAccount(ConfigFile.Account account, IPAddress ipaddr, bool @override);
     }
 }

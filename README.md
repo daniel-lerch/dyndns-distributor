@@ -26,6 +26,7 @@ Per default, the configuration looks like this:
 {
     "IpRetrieveUrl": "https://api.ipify.org/",
     "IpPollingInterval": null,
+    "UserAgent": "VectorData - DynDNS Distributor - 1.0",
     "LocalAccounts": [ "proxyuser" ],
     "Accounts": [
         {
@@ -33,8 +34,8 @@ Per default, the configuration looks like this:
             "Username": "proxyuser",
             "Password": "localnetpw123",
             "UpdateUrls": [
-                "https://example.de:password123@dyndns.strato.com/nic/update?hostname=example.de&myip=<ipaddr>",
-                "https://example.de:password123@dyndns.strato.com/nic/update?hostname=sub.example.de&myip=<ipaddr>"
+                "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=test.feste-ip.net",
+                "https://username:password@dyndns.example.com/update?hostname=mydomain.de&myip=<ipaddr>"
             ]
         }
     ]
@@ -47,6 +48,10 @@ An URL to retrieve the extern IP address for local accounts.
 An intervall to look for extern IP updates using the `IpRetrieveUrl`.
 This parameter is specified in milliseconds which means that `900000` equals one refresh each 15 minutes.
 Because this application is designed as a proxy, polling is disabled by default by setting `IpPollingInverval` to `null`.
+
+#### `UserAgent` ####
+The user agent that will be used for DNS updates.
+Some providers, like strato.de or dyn.com require a specific user agent.
 
 #### `LocalAccounts` ####
 An array that lists the usernames of all local accounts.

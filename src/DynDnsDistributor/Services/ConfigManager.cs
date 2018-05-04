@@ -1,14 +1,15 @@
-﻿using System;
+﻿using DynDnsDistributor.Config;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DynDnsDistributor.Config;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace DynDnsDistributor.Services
 {
@@ -55,18 +56,24 @@ namespace DynDnsDistributor.Services
 
         public ConfigFile CurrentConfig { get; private set; }
 
-        public Task UpdateAccount(ConfigFile.Account account)
-        {
-            if (account.CurrentIpAddress == null) return Task.CompletedTask;
-
-            return Task.WhenAll(account.UpdateUrls
-                .Select(x => UpdateDns(x, account.CurrentIpAddress.ToString())));
-        }
-
-        public Task UpdateAccount(ConfigFile.Account account, IPAddress ipaddr)
+        public async Task UpdateAccount(ConfigFile.Account account, IPAddress ipaddr, bool @override)
         {
             account.CurrentIpAddress = ipaddr;
-            return UpdateAccount(account);
+
+            if (@override || account.CurrentIpAddress.Equals(account.PublishedIpAddress)) return;
+
+            Task<bool>[] tasks = new Task<bool>[account.UpdateUrls.Count];
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                tasks[i] = UpdateDns(account.UpdateUrls[i], account.CurrentIpAddress.ToString());
+            }
+            bool success = true;
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                if (!await tasks[i]) success = false;
+            }
+
+            if (success) account.PublishedIpAddress = account.CurrentIpAddress;
         }
 
         private void Load()
@@ -75,7 +82,7 @@ namespace DynDnsDistributor.Services
             {
                 string config = File.ReadAllText(configPath);
                 CurrentConfig = JsonConvert.DeserializeObject<ConfigFile>(config) ?? throw new Exception();
-                _logger.LogInformation("Loaded new config:" + Environment.NewLine + 
+                _logger.LogInformation("Loaded new config:" + Environment.NewLine +
                     JsonConvert.SerializeObject(CurrentConfig, Formatting.Indented));
                 pollingTimer.Change(0, CurrentConfig.IpPollingInterval ?? -1);
             }
@@ -95,7 +102,7 @@ namespace DynDnsDistributor.Services
 
                 await Task.WhenAll(CurrentConfig.Accounts
                     .Where(x => CurrentConfig.LocalAccounts.Contains(x.Username))
-                    .Select(x => UpdateAccount(x, ipaddr)));
+                    .Select(x => UpdateAccount(x, ipaddr, false)));
             }
             catch (Exception ex)
             {
@@ -107,7 +114,7 @@ namespace DynDnsDistributor.Services
             }
         }
 
-        public async Task UpdateDns(string url, string ipaddr)
+        public async Task<bool> UpdateDns(string url, string ipaddr)
         {
             Uri dest = new Uri(url.Replace("<ipaddr>", ipaddr));
             try
@@ -115,22 +122,35 @@ namespace DynDnsDistributor.Services
                 HttpWebRequest webRequest = WebRequest.CreateHttp(dest);
                 if (!string.IsNullOrWhiteSpace(dest.UserInfo))
                 {
-                    int delimiter = dest.UserInfo.IndexOf(':');
-                    if (delimiter == -1)
-                    {
-                        _logger.LogError("Invalid credentials in update URL");
-                        return;
-                    }
-                    string username = dest.UserInfo.Remove(delimiter);
-                    string password = dest.UserInfo.Substring(delimiter + 1);
-                    webRequest.Credentials = new NetworkCredential(username, password);
+                    string encoded = Convert.ToBase64String(Encoding.ASCII.GetBytes(dest.UserInfo));
+                    webRequest.Headers.Add(HttpRequestHeader.Authorization, $"Basic {encoded}");
+                    webRequest.Headers.Add(HttpRequestHeader.UserAgent, CurrentConfig.UserAgent);
                 }
                 HttpWebResponse webResponse = await webRequest.GetResponseAsync() as HttpWebResponse;
-                _logger.LogInformation($"Successfully updated {dest.Host}: {webResponse.StatusCode}");
+                using (Stream responseStream = webResponse.GetResponseStream())
+                using (StreamReader reader = new StreamReader(responseStream))
+                {
+                    string responseContent = await reader.ReadToEndAsync();
+                    bool result = responseContent.StartsWith("good", StringComparison.OrdinalIgnoreCase) ||
+                        responseContent.StartsWith("nochg", StringComparison.OrdinalIgnoreCase);
+                    if (result)
+                    {
+                        _logger.LogInformation($"Successfully updated {dest.Host}: {webResponse.StatusCode}" +
+                            Environment.NewLine + responseContent);
+                        return true;
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Updating {dest.Host} returned {webResponse.StatusCode}" +
+                            Environment.NewLine + responseContent);
+                        return false;
+                    }
+                }
             }
             catch (WebException ex)
             {
                 _logger.LogError(ex, $"Error while DNS update to {dest}");
+                return false;
             }
         }
     }

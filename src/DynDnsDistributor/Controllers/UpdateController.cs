@@ -69,7 +69,7 @@ namespace DynDnsDistributor.Controllers
                 return StatusCode(401);
             }
 
-            await _configManager.UpdateAccount(account, IPAddress.Parse(myip));
+            await _configManager.UpdateAccount(account, IPAddress.Parse(myip), true);
             return StatusCode(200);
         }
     }
