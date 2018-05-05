@@ -19,6 +19,14 @@ The required steps for configuring an ASP.NET Core application vary for differen
 Precompiled binaries are offered for .NET Core Runtime and can be retrieved [here](https://github.com/daniel-lerch/dyndns-distributor/releases).
 For the further setup refer to [Microsoft's deployment guides](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/).
 
+### IIS ###
+If you are hosting DynDNS Distributor with Kestrel behind an IIS reverse proxy please do all steps of Microsoft's instruction first.
+After this you have to configure your app pool in order to prevent IIS from shutting down the website after 20 minutes inactivity.
+Therefore select your app pool for DynDNS Distributor and go to _Advanced Settings_.
+In section _(General)_ set start mode to `AlwaysRunning` and in section _Process Model_ set _Idle Time-out (minutes)_ to `0`.
+
+_TODO: App initialization ([IIS Application Initialization module](https://blogs.msdn.microsoft.com/benjaminperkins/2014/01/07/configure-the-iis-application-initialization-module/))_
+
 ## Configuration ##
 The configuration of update URLs, accounts and credentials is done in the file `dyndnsconfig.json` located in the application root.
 Per default, the configuration looks like this:
