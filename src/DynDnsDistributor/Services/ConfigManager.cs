@@ -56,6 +56,8 @@ namespace DynDnsDistributor.Services
 
         public ConfigFile CurrentConfig { get; private set; }
 
+        public bool ValidConfigFile { get; private set; }
+
         public async Task UpdateAccount(ConfigFile.Account account, IPAddress ipaddr, bool @override)
         {
             account.CurrentIpAddress = ipaddr;
@@ -81,13 +83,15 @@ namespace DynDnsDistributor.Services
             try
             {
                 string config = File.ReadAllText(configPath);
-                CurrentConfig = JsonConvert.DeserializeObject<ConfigFile>(config) ?? throw new Exception();
+                CurrentConfig = JsonConvert.DeserializeObject<ConfigFile>(config) ?? throw new InvalidDataException();
+                ValidConfigFile = true;
                 _logger.LogInformation("Loaded new config:" + Environment.NewLine +
                     JsonConvert.SerializeObject(CurrentConfig, Formatting.Indented));
                 pollingTimer.Change(0, CurrentConfig.IpPollingInterval ?? -1);
             }
             catch (Exception ex)
             {
+                ValidConfigFile = false;
                 _logger.LogError(ex, "Error while loading config");
             }
         }

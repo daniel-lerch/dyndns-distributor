@@ -25,7 +25,11 @@ After this you have to configure your app pool in order to prevent IIS from shut
 Therefore select your app pool for DynDNS Distributor and go to _Advanced Settings_.
 In section _(General)_ set start mode to `AlwaysRunning` and in section _Process Model_ set _Idle Time-out (minutes)_ to `0`.
 
-_TODO: App initialization ([IIS Application Initialization module](https://blogs.msdn.microsoft.com/benjaminperkins/2014/01/07/configure-the-iis-application-initialization-module/))_
+The next step is required in order to force ASP.NET Core to really launch the website when IIS starts the application pool.
+There are many different ways to configure the application initialization module.
+If you are already familiar with this technology you can simply use `/appinit` as request path and continue with the configuration.
+Those who are new to this feature should follow [these instructions](https://docs.microsoft.com/en-us/iis/configuration/system.webserver/applicationinitialization/)
+and skip `remapManagedRequestsTo` and `hostName`. These fields are not required for DynDNS Distributor.
 
 ## Configuration ##
 The configuration of update URLs, accounts and credentials is done in the file `dyndnsconfig.json` located in the application root.
@@ -82,6 +86,8 @@ In combination with a Fritz!Box as router you have to configure the following up
 ```
 http://<localipaddr>:<port>/update?hostname=<domain>&myip=<ipaddr>
 ```
+Do not replace `<domain>` or `<ipaddr>` as this will be done by the router.
+
 Example:
 ```
 http://192.168.178.46:8080/update?hostname=<domain>&myip=<ipaddr>
@@ -99,8 +105,8 @@ git clone https://github.com/daniel-lerch/dyndns-distributor.git
 cd src/DynDnsDistributor
 dotnet publish -c Release
 ```
-### For Raspberry Pi ###
-You need to run this on a machine with .NET Core SDK which not available for ARM at the moment.
+### For Linux/ARM (Raspberry Pi) ###
+You need to run this on a x86 machine with .NET Core SDK. Maybe it will be possible to build on ARM in the future.
 ```bash
 git clone https://github.com/daniel-lerch/dyndns-distributor.git
 cd src/DynDnsDistributor

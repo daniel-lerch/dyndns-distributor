@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -16,8 +15,8 @@ namespace DynDnsDistributor.Controllers
     [Route("[controller]")]
     public class UpdateController : Controller
     {
-        private IConfigManager _configManager;
-        private ILogger<UpdateController> _logger;
+        private readonly IConfigManager _configManager;
+        private readonly ILogger<UpdateController> _logger;
 
         public UpdateController(IConfigManager configManager, ILogger<UpdateController> logger)
         {
