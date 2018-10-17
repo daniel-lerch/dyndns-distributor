@@ -107,12 +107,13 @@ cd dyndns-distributor/src/DynDnsDistributor
 dotnet publish -c Release
 ```
 ### For Docker ###
-This way has not been tested yet and may not work as expected.
 Prerequisites:
 - Docker
 
+Replace `TAG_NAME` with your desired tag name. For example `1.1` or `latest`.
 ```
-docker build -t daniel-lerch/dyndns-distributor https://github.com/daniel-lerch/dyndns-distributor.git
+docker build -t daniel-lerch/dyndns-distributor:TAG_NAME https://github.com/daniel-lerch/dyndns-distributor.git
 ```
 
-If you want to tag your built image use `-t daniel-lerch/dyndns-distributor:TAG_NAME`.
+The config file is located at `/app/dyndnsconfig.json` inside the container.
+A more elegant solution for config mounting and upgrading is planned for version 1.2.
