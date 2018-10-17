@@ -96,19 +96,23 @@ In the domain, username and password field, please fill in the same values as in
 
 ## Building from source ##
 
-### Requirements ###
+### For .NET Runtime ###
+Prerequisites:
 - Git
 - .NET Core SDK
-### For .NET Runtime ###
-```bash
+
+```
 git clone https://github.com/daniel-lerch/dyndns-distributor.git
-cd src/DynDnsDistributor
+cd dyndns-distributor/src/DynDnsDistributor
 dotnet publish -c Release
 ```
-### For Linux/ARM (Raspberry Pi) ###
-You need to run this on a x86 machine with .NET Core SDK. Maybe it will be possible to build on ARM in the future.
-```bash
-git clone https://github.com/daniel-lerch/dyndns-distributor.git
-cd src/DynDnsDistributor
-dotnet publish -c Release -r linux-arm
+### For Docker ###
+This way has not been tested yet and may not work as expected.
+Prerequisites:
+- Docker
+
 ```
+docker build -t daniel-lerch/dyndns-distributor https://github.com/daniel-lerch/dyndns-distributor.git
+```
+
+If you want to tag your built image use `-t daniel-lerch/dyndns-distributor:TAG_NAME`.
