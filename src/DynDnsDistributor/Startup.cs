@@ -16,12 +16,9 @@ namespace DynDnsDistributor
 {
     public class Startup
     {
-        private ILoggerFactory _loggerFactory;
-
-        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            _loggerFactory = loggerFactory;
         }
 
         public IConfiguration Configuration { get; }
@@ -32,7 +29,7 @@ namespace DynDnsDistributor
             services.AddOptions();
             services.Configure<DynDnsOptions>(Configuration);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddSingleton<IConfigManager>(new ConfigManager(_loggerFactory.CreateLogger<ConfigManager>()));
+            services.AddSingleton<IConfigManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -21,13 +21,15 @@ namespace DynDnsDistributor.Services
         private const string ConfigFilePath = "dyndnsconfig.json";
 #endif
         private const int EventDelay = 500;
+        private DnsUpdateService _updateService;
         private ILogger<ConfigManager> _logger;
         private FileSystemWatcher watcher;
         private Timer pollingTimer;
         private string configPath;
 
-        public ConfigManager(ILogger<ConfigManager> logger)
+        public ConfigManager(DnsUpdateService updateService, ILogger<ConfigManager> logger)
         {
+            _updateService = updateService;
             _logger = logger;
             pollingTimer = new Timer(async o => await UpdateLocalAccounts(), null, -1, -1);
             configPath = Path.Combine(Environment.CurrentDirectory, ConfigFilePath);
@@ -67,7 +69,7 @@ namespace DynDnsDistributor.Services
             Task<bool>[] tasks = new Task<bool>[account.UpdateUrls.Count];
             for (int i = 0; i < tasks.Length; i++)
             {
-                tasks[i] = UpdateDns(account.UpdateUrls[i], account.CurrentIpAddress.ToString());
+                tasks[i] = _updateService.UpdateAsync(account.UpdateUrls[i], account.CurrentIpAddress.ToString());
             }
             bool success = true;
             for (int i = 0; i < tasks.Length; i++)
@@ -115,46 +117,6 @@ namespace DynDnsDistributor.Services
             finally
             {
                 webClient.Dispose();
-            }
-        }
-
-        public async Task<bool> UpdateDns(string url, string ipaddr)
-        {
-            Uri dest = new Uri(url.Replace("<ipaddr>", ipaddr));
-            try
-            {
-                HttpWebRequest webRequest = WebRequest.CreateHttp(dest);
-                if (!string.IsNullOrWhiteSpace(dest.UserInfo))
-                {
-                    string encoded = Convert.ToBase64String(Encoding.ASCII.GetBytes(dest.UserInfo));
-                    webRequest.Headers.Add(HttpRequestHeader.Authorization, $"Basic {encoded}");
-                    webRequest.Headers.Add(HttpRequestHeader.UserAgent, CurrentConfig.UserAgent);
-                }
-                HttpWebResponse webResponse = await webRequest.GetResponseAsync() as HttpWebResponse;
-                using (Stream responseStream = webResponse.GetResponseStream())
-                using (StreamReader reader = new StreamReader(responseStream))
-                {
-                    string responseContent = await reader.ReadToEndAsync();
-                    bool result = responseContent.StartsWith("good", StringComparison.OrdinalIgnoreCase) ||
-                        responseContent.StartsWith("nochg", StringComparison.OrdinalIgnoreCase);
-                    if (result)
-                    {
-                        _logger.LogInformation($"Successfully updated {dest.Host}: {webResponse.StatusCode}" +
-                            Environment.NewLine + responseContent);
-                        return true;
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"Updating {dest.Host} returned {webResponse.StatusCode}" +
-                            Environment.NewLine + responseContent);
-                        return false;
-                    }
-                }
-            }
-            catch (WebException ex)
-            {
-                _logger.LogError(ex, $"Error while DNS update to {dest}");
-                return false;
             }
         }
     }
