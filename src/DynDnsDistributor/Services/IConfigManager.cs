@@ -1,4 +1,4 @@
-﻿using DynDnsDistributor.Config;
+﻿using DynDnsDistributor.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +9,8 @@ namespace DynDnsDistributor.Services
 {
     public interface IConfigManager
     {
-        ConfigFile CurrentConfig { get; }
+        DynDnsOptions CurrentConfig { get; }
         bool ValidConfigFile { get; }
-        Task UpdateAccount(ConfigFile.Account account, IPAddress ipaddr, bool @override);
+        Task UpdateAccount(DynDnsOptions.Account account, IPAddress ipaddr, bool @override);
     }
 }

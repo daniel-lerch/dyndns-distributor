@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using DynDnsDistributor.Config;
+using DynDnsDistributor.Configuration;
 using DynDnsDistributor.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -57,7 +57,7 @@ namespace DynDnsDistributor.Controllers
                 password = authHeader.Substring(split + 1);
             }
 
-            ConfigFile.Account account = _configManager.CurrentConfig.Accounts
+            DynDnsOptions.Account account = _configManager.CurrentConfig.Accounts
                 .Where(a => a.Hostname == hostname &&
                 a.Username == username && 
                 a.Password == password).FirstOrDefault();

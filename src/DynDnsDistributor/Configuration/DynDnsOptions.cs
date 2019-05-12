@@ -5,9 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace DynDnsDistributor.Config
+namespace DynDnsDistributor.Configuration
 {
-    public class ConfigFile
+    public class DynDnsOptions
     {
         public string IpRetrieveUrl { get; set; }
         public int? IpPollingInterval { get; set; }

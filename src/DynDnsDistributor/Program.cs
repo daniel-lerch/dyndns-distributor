@@ -19,6 +19,8 @@ namespace DynDnsDistributor
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(builder =>
+                    builder.AddJsonFile("dyndnsconfig.json", optional: false, reloadOnChange: true))
                 .UseStartup<Startup>();
     }
 }

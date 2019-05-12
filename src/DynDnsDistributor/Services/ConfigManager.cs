@@ -1,4 +1,4 @@
-﻿using DynDnsDistributor.Config;
+﻿using DynDnsDistributor.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -54,11 +54,11 @@ namespace DynDnsDistributor.Services
             watcher.EnableRaisingEvents = true;
         }
 
-        public ConfigFile CurrentConfig { get; private set; }
+        public DynDnsOptions CurrentConfig { get; private set; }
 
         public bool ValidConfigFile { get; private set; }
 
-        public async Task UpdateAccount(ConfigFile.Account account, IPAddress ipaddr, bool @override)
+        public async Task UpdateAccount(DynDnsOptions.Account account, IPAddress ipaddr, bool @override)
         {
             account.CurrentIpAddress = ipaddr;
 
@@ -83,7 +83,7 @@ namespace DynDnsDistributor.Services
             try
             {
                 string config = File.ReadAllText(configPath);
-                CurrentConfig = JsonConvert.DeserializeObject<ConfigFile>(config) ?? throw new InvalidDataException();
+                CurrentConfig = JsonConvert.DeserializeObject<DynDnsOptions>(config) ?? throw new InvalidDataException();
                 ValidConfigFile = true;
                 _logger.LogInformation("Loaded new config:" + Environment.NewLine +
                     JsonConvert.SerializeObject(CurrentConfig, Formatting.Indented));
