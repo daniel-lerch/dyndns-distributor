@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using DynDnsDistributor.Configuration;
 using DynDnsDistributor.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 
 namespace DynDnsDistributor.Controllers
@@ -15,23 +15,24 @@ namespace DynDnsDistributor.Controllers
     [Route("[controller]")]
     public class UpdateController : Controller
     {
-        private readonly IConfigManager _configManager;
-        private readonly ILogger<UpdateController> _logger;
+        private readonly IOptionsMonitor<DynDnsOptions> optionsMonitor;
+        private readonly DnsUpdateService updateService;
 
-        public UpdateController(IConfigManager configManager, ILogger<UpdateController> logger)
+        public UpdateController(IOptionsMonitor<DynDnsOptions> optionsMonitor, DnsUpdateService updateService)
         {
-            _configManager = configManager;
-            _logger = logger;
+            this.optionsMonitor = optionsMonitor;
+            this.updateService = updateService;
         }
 
         // GET update?myip=<ipaddr>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery(Name = "hostname")]string hostname, [FromQuery(Name = "myip")]string myip)
+        public async Task<IActionResult> Get([FromQuery(Name = "myip")]string myip)
         {
             if (string.IsNullOrWhiteSpace(myip))
                 return StatusCode(400, "Please specify your IP address.");
+            if (!IPAddress.TryParse(myip, out _))
+                return StatusCode(400, "Invalid IP address format.");
 
-            if (string.IsNullOrWhiteSpace(hostname)) hostname = null;
             string username = null;
             string password = null;
             string authHeader = Request.Headers["Authorization"];
@@ -57,10 +58,8 @@ namespace DynDnsDistributor.Controllers
                 password = authHeader.Substring(split + 1);
             }
 
-            DynDnsOptions.Account account = _configManager.CurrentConfig.Accounts
-                .Where(a => a.Hostname == hostname &&
-                a.Username == username && 
-                a.Password == password).FirstOrDefault();
+            DynDnsOptions.Account account = optionsMonitor.CurrentValue.Accounts
+                .Where(a => a.Username == username && a.Password == password).FirstOrDefault();
 
             if (account == null)
             {
@@ -68,7 +67,10 @@ namespace DynDnsDistributor.Controllers
                 return StatusCode(401);
             }
 
-            await _configManager.UpdateAccount(account, IPAddress.Parse(myip), true);
+            foreach (string url in account.UpdateUrls)
+            {
+                await updateService.UpdateAsync(url, myip);
+            }
             return StatusCode(200);
         }
     }
