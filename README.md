@@ -36,21 +36,20 @@ The configuration of update URLs, accounts and credentials is done in the file `
 Per default, the configuration looks like this:
 ```json
 {
-    "IpRetrieveUrl": "https://api.ipify.org/",
-    "IpPollingInterval": null,
-    "UserAgent": "VectorData - DynDNS Distributor - 1.0",
-    "LocalAccounts": [ "proxyuser" ],
-    "Accounts": [
-        {
-            "Hostname": "update.any",
-            "Username": "proxyuser",
-            "Password": "localnetpw123",
-            "UpdateUrls": [
-                "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=test.feste-ip.net",
-                "https://username:password@dyndns.example.com/update?hostname=mydomain.de&myip=<ipaddr>"
-            ]
-        }
-    ]
+  "IpRetrieveUrl": "https://api.ipify.org/",
+  "IpPollingInterval": null,
+  "UserAgent": "VectorData - DynDNS Distributor - 2.0",
+  "Accounts": [
+    {
+      "Username": "proxyuser",
+      "Password": "localnetpw123",
+      "Local": true,
+      "UpdateUrls": [
+        "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=test.feste-ip.net",
+        "https://username:password@dyndns.example.com/update?hostname=mydomain.de&myip=<ipaddr>"
+      ]
+    }
+  ]
 }
 ```
 #### `IpRetrieveUrl` ####
@@ -65,16 +64,13 @@ Because this application is designed as a proxy, polling is disabled by default 
 The user agent that will be used for DNS updates.
 Some providers, like strato.de or dyn.com require a specific user agent.
 
-#### `LocalAccounts` ####
-An array that lists the usernames of all local accounts.
-Local accounts are located in the local network and have the same IP address as the result of `IpRetrieveUrl`.
-Every local account is updated automatically on startup and with each polling.
-
 #### `Accounts` ####
 An array that contains all account objects.
-Each account has fields for `hostname`, `username`, `password` and another array `UpdateUrls`.
+Each account has fields for `Username`, `Password` and another array `UpdateUrls`.
 If you don't want to specify a hostname, you can set this value to `null`.
-Setting `username` and `password` to `null` disables authentication.
+Setting `Username` and `Password` to `null` disables authentication.
+Local accounts are located in the local network and have the same IP address as the result of `IpRetrieveUrl`.
+Every local account is updated automatically on startup and with each polling.
 
 ##### `UpdateUrl` #####
 This is the URL to push an IP address change.
@@ -110,10 +106,9 @@ dotnet publish -c Release
 Prerequisites:
 - Docker
 
-Replace `TAG_NAME` with your desired tag name. For example `1.1` or `latest`.
+Replace `TAG_NAME` with your desired tag name. For example `2.0` or `latest`.
 ```
 docker build -t daniel-lerch/dyndns-distributor:TAG_NAME https://github.com/daniel-lerch/dyndns-distributor.git
 ```
 
 The config file is located at `/app/dyndnsconfig.json` inside the container.
-A more elegant solution for config mounting and upgrading is planned for version 1.2.

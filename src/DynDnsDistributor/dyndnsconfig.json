@@ -1,17 +1,16 @@
 {
-    "IpRetrieveUrl": "https://api.ipify.org/",
-    "IpPollingInterval": null,
-    "UserAgent": "VectorData - DynDNS Distributor - 1.0",
-    "LocalAccounts": [ "proxyuser" ],
-    "Accounts": [
-        {
-            "Hostname": "update.any",
-            "Username": "proxyuser",
-            "Password": "localnetpw123",
-            "UpdateUrls": [
-                "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=test.feste-ip.net",
-                "https://username:password@dyndns.example.com/update?hostname=mydomain.de&myip=<ipaddr>"
-            ]
-        }
-    ]
+  "IpRetrieveUrl": "https://api.ipify.org/",
+  "IpPollingInterval": null,
+  "UserAgent": "VectorData - DynDNS Distributor - 2.0",
+  "Accounts": [
+    {
+      "Username": "proxyuser",
+      "Password": "localnetpw123",
+      "Local": true,
+      "UpdateUrls": [
+        "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=test.feste-ip.net",
+        "https://username:password@dyndns.example.com/update?hostname=mydomain.de&myip=<ipaddr>"
+      ]
+    }
+  ]
 }
