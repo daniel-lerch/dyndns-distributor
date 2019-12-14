@@ -18,7 +18,7 @@ namespace DynDnsDistributor.Services
         private readonly ILogger<IpPollingHostedService> logger;
         private readonly Timer timer;
         private readonly IDisposable eventHander;
-        private string lastIpAddress;
+        private string? lastIpAddress;
 
         public IpPollingHostedService(IOptionsMonitor<DynDnsOptions> optionsMonitor, DnsUpdateService updateService, ILogger<IpPollingHostedService> logger)
         {
@@ -49,7 +49,7 @@ namespace DynDnsDistributor.Services
 
         private async Task UpdateLocalAccounts()
         {
-            string address = await GetPublicAddress();
+            string? address = await GetPublicAddress();
             if (address == null || address == lastIpAddress)
                 return;
 
@@ -65,7 +65,7 @@ namespace DynDnsDistributor.Services
             }
         }
 
-        private Task<string> GetPublicAddress()
+        private Task<string?> GetPublicAddress()
         {
             WebClient client = new WebClient();
             try
@@ -75,7 +75,7 @@ namespace DynDnsDistributor.Services
             catch (WebException ex)
             {
                 logger.LogError(ex, "Failed to fetch public IP address from {0}", optionsMonitor.CurrentValue.IpRetrieveUrl);
-                return null;
+                return Task.FromResult<string?>(null);
             }
             finally
             {

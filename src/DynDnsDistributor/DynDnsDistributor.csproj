@@ -2,11 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <Version>2.0.0</Version>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <Nullable>enable</Nullable>
     <Authors>Daniel Lerch</Authors>
     <Copyright>Copyright © 2018-2019 Daniel Lerch</Copyright>
     <Company />
+    <PackageLicenseExpression>MIT License</PackageLicenseExpression>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <Version>2.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

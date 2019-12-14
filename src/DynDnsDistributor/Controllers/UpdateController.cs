@@ -33,8 +33,8 @@ namespace DynDnsDistributor.Controllers
             if (!IPAddress.TryParse(myip, out _))
                 return StatusCode(400, "Invalid IP address format.");
 
-            string username = null;
-            string password = null;
+            string? username = null;
+            string? password = null;
             string authHeader = Request.Headers["Authorization"];
             if (!string.IsNullOrWhiteSpace(authHeader))
             {

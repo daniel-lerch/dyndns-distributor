@@ -25,8 +25,9 @@ namespace DynDnsDistributor
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOptions();
-            services.Configure<DynDnsOptions>(Configuration);
+            services.AddOptions<DynDnsOptions>()
+                .Bind(Configuration)
+                .ValidateDataAnnotations();
 
             services.AddRouting();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
