@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,29 +31,39 @@ func (h *UpdateHandler) Handle(c *gin.Context) {
 		return
 	}
 
-	for _, updateUrl := range h.settings.Accounts[account.(int)].UpdateUrls {
+	successfulUpdates := 0
+
+	for _, updateUrlTemplate := range h.settings.Accounts[account.(int)].UpdateUrls {
+
+		updateUrl := strings.ReplaceAll(updateUrlTemplate, "<ipaddr>", ip.String())
+
 		request, error := http.NewRequest("GET", updateUrl, nil)
 		if error != nil {
-			fmt.Println(error)
+			c.Error(error)
 			continue
 		}
 
 		client := &http.Client{}
 		response, error := client.Do(request)
 		if error != nil {
-			fmt.Println(error)
+			c.Error(error)
 			continue
 		}
 
 		defer response.Body.Close()
 		body, error := ioutil.ReadAll(response.Body)
 		if error != nil {
-			fmt.Println(error)
+			c.Error(error)
 			continue
 		}
 
+		successfulUpdates++
+
+		fmt.Print(request.URL)
+		fmt.Println(":")
+		fmt.Print("\t")
 		fmt.Println(string(body))
 	}
 
-	c.String(200, "Successfully updated %d domains", len(h.settings.Accounts[account.(int)].UpdateUrls))
+	c.String(200, "Successfully updated %d of %d domains", successfulUpdates, len(h.settings.Accounts[account.(int)].UpdateUrls))
 }

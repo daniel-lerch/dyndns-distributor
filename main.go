@@ -17,6 +17,8 @@ func main() {
 			fmt.Println(account)
 		}
 		router := gin.Default()
+		router.Use(gin.Logger())
+
 		router.GET("/update", NewAuthHandler(settings).Handle, NewUpdateHandler(settings).Handle)
 
 		router.Run("localhost:8080")
