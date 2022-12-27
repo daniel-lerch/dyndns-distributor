@@ -2,20 +2,9 @@ package main
 
 import (
 	"fmt"
-	"net"
 
 	"github.com/gin-gonic/gin"
 )
-
-func update(c *gin.Context) {
-	ip := net.ParseIP(c.Query("myip"))
-	if ip == nil {
-		c.String(400, "Please specify your IP address.")
-	} else {
-		c.Status(200)
-	}
-
-}
 
 func main() {
 	settings, err := LoadSettings()
@@ -28,7 +17,7 @@ func main() {
 			fmt.Println(account)
 		}
 		router := gin.Default()
-		router.GET("/update", NewAuthHandler(settings).Handle, update)
+		router.GET("/update", NewAuthHandler(settings).Handle, NewUpdateHandler(settings).Handle)
 
 		router.Run("localhost:8080")
 	}

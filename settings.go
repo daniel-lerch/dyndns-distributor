@@ -22,7 +22,7 @@ type Account struct {
 
 func LoadSettings() (Settings, error) {
 	var settings Settings
-	file, err := os.Open("src/DynDnsDistributor/dyndnsconfig.Development.json")
+	file, err := os.Open("src/DynDnsDistributor/dyndnsconfig.json")
 	if err != nil {
 		return settings, err
 	} else {
