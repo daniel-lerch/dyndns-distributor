@@ -7,22 +7,21 @@ import (
 )
 
 type Settings struct {
-	IpRetrieveUrl     string    `json:"IpRetrieveUrl"`
-	IpPollingInterval int       `json:"IpPollingInterval"`
-	UserAgent         string    `json:"UserAgent"`
-	Accounts          []Account `json:"Accounts"`
+	IpRetrieveUrl string    `json:"IpRetrieveUrl"`
+	UserAgent     string    `json:"UserAgent"`
+	Accounts      []Account `json:"Accounts"`
 }
 
 type Account struct {
-	Username   string   `json:"Username"`
-	Password   string   `json:"Password"`
-	Local      bool     `json:"Local"`
-	UpdateUrls []string `json:"UpdateUrls"`
+	Username        string   `json:"Username"`
+	Password        string   `json:"Password"`
+	UpdateOnStartup bool     `json:"UpdateOnStartup"`
+	UpdateUrls      []string `json:"UpdateUrls"`
 }
 
-func LoadSettings() (Settings, error) {
-	var settings Settings
-	file, err := os.Open("src/DynDnsDistributor/dyndnsconfig.json")
+func LoadSettings() (*Settings, error) {
+	settings := new(Settings)
+	file, err := os.Open("dyndnsconfig.json")
 	if err != nil {
 		return settings, err
 	} else {
@@ -30,7 +29,7 @@ func LoadSettings() (Settings, error) {
 		if err != nil {
 			return settings, err
 		} else {
-			json.Unmarshal(buffer, &settings)
+			json.Unmarshal(buffer, settings)
 			return settings, nil
 		}
 	}

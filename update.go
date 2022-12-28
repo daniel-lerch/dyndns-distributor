@@ -2,20 +2,18 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
-	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UpdateHandler struct {
-	settings Settings
+	settings *Settings
+	client   *DynClient
 }
 
-func NewUpdateHandler(settings Settings) *UpdateHandler {
-	return &UpdateHandler{settings: settings}
+func NewUpdateHandler(settings *Settings, client *DynClient) *UpdateHandler {
+	return &UpdateHandler{settings, client}
 }
 
 func (h *UpdateHandler) Handle(c *gin.Context) {
@@ -35,31 +33,15 @@ func (h *UpdateHandler) Handle(c *gin.Context) {
 
 	for _, updateUrlTemplate := range h.settings.Accounts[account.(int)].UpdateUrls {
 
-		updateUrl := strings.ReplaceAll(updateUrlTemplate, "<ipaddr>", ip.String())
-
-		request, error := http.NewRequest("GET", updateUrl, nil)
-		if error != nil {
-			c.Error(error)
-			continue
-		}
-
-		client := &http.Client{}
-		response, error := client.Do(request)
-		if error != nil {
-			c.Error(error)
-			continue
-		}
-
-		defer response.Body.Close()
-		body, error := ioutil.ReadAll(response.Body)
-		if error != nil {
-			c.Error(error)
+		body, loggingUrl, err := h.client.Update(updateUrlTemplate, ip)
+		if err != nil {
+			c.Error(err)
 			continue
 		}
 
 		successfulUpdates++
 
-		fmt.Print(request.URL)
+		fmt.Print(loggingUrl)
 		fmt.Println(":")
 		fmt.Print("\t")
 		fmt.Println(string(body))

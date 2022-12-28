@@ -3,11 +3,11 @@ package main
 import "github.com/gin-gonic/gin"
 
 type AuthHandler struct {
-	settings Settings
+	settings *Settings
 }
 
-func NewAuthHandler(settings Settings) *AuthHandler {
-	return &AuthHandler{settings: settings}
+func NewAuthHandler(settings *Settings) *AuthHandler {
+	return &AuthHandler{settings}
 }
 
 func (h *AuthHandler) Handle(c *gin.Context) {

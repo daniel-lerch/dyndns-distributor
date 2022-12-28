@@ -1,0 +1,15 @@
+{
+  "IpRetrieveUrl": "https://api.ipify.org/",
+  "UserAgent": "VectorData - DynDNS Distributor - 2.0",
+  "Accounts": [
+    {
+      "Username": "proxyuser",
+      "Password": "localnetpw123",
+      "UpdateOnStartup": true,
+      "UpdateUrls": [
+        "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=test.feste-ip.net",
+        "https://username:password@dyndns.example.com/update?hostname=mydomain.de&myip=<ipaddr>"
+      ]
+    }
+  ]
+}
