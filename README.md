@@ -1,12 +1,31 @@
 # DynDNS Distributor #
 
-This application works as a dynamic DNS proxy for your router to update multiple domains.
+[![](https://img.shields.io/docker/pulls/daniellerch/dyndns-distributor.svg)](https://hub.docker.com/r/daniellerch/dyndns-distributor)
+[![](https://img.shields.io/docker/image-size/daniellerch/dyndns-distributor/latest.svg)](https://hub.docker.com/r/daniellerch/dyndns-distributor)
+
+A dynamic DNS proxy for your router to update multiple domains.
 
 Most routers only support a single dynamic DNS update URL.
 If you want to update multiple hostnames, just configure DynDNS Distributor as update URL in your router and all your configured URLs will be updated immediately.
 
 ## Installation ##
-> TODO
+
+Installation is easiest with Docker Compose.
+Create a `docker-compose.yml` file with the following content and move on to configuration (next heading) before start. 
+
+```yaml
+version: '2.1'
+
+services:
+  app:
+    image: daniellerch/dyndns-distributor:3
+    volumes:
+      - ./dyndnsconfig.json:/app/dyndnsconfig.json
+    ports:
+      - "8080:8080"
+```
+
+Windows is not supported anymore but if you want me to provide Windows builds, just open an issue.
 
 ## Configuration ##
 The configuration of update URLs, accounts and credentials is done in the file `dyndnsconfig.json` located in the application root.
