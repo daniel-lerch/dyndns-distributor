@@ -1,6 +1,7 @@
 {
+  "ListenerAddress": "localhost:8080",
   "IpRetrieveUrl": "https://api.ipify.org/",
-  "UserAgent": "VectorData - DynDNS Distributor - 2.0",
+  "UserAgent": "VectorData - DynDNS Distributor - 3.0",
   "Accounts": [
     {
       "Username": "proxyuser",

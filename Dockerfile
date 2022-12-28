@@ -1,16 +1,17 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+FROM golang:1-alpine3.17 AS build-env
 WORKDIR /app
 
-# Copy csproj and restore as distinct layers
-COPY src/*/*.csproj ./
-RUN dotnet restore
+# Copy go.mod and go.sum and download as distinct layers
+COPY go.mod go.sum ./
+RUN go mod download
 
 # Copy everything else and build
 COPY . ./
-RUN dotnet publish -c Release -o /app/out
+RUN go build -o /app/dyndns-distributor
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+FROM alpine:3.17
 WORKDIR /app
-COPY --from=build-env /app/out .
-ENTRYPOINT ["dotnet", "DynDnsDistributor.dll"]
+ENV GIN_MODE=release
+COPY --from=build-env /app/dyndns-distributor .
+ENTRYPOINT ["./dyndns-distributor"]

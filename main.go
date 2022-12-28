@@ -22,7 +22,7 @@ func main() {
 
 	router.GET("/update", NewAuthHandler(settings).Handle, NewUpdateHandler(settings, client).Handle)
 
-	router.Run("localhost:8080")
+	router.Run(settings.ListenerAddress)
 }
 
 func UpdateOnStartup(settings *Settings, client *DynClient) {

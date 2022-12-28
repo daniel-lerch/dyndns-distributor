@@ -7,9 +7,10 @@ import (
 )
 
 type Settings struct {
-	IpRetrieveUrl string    `json:"IpRetrieveUrl"`
-	UserAgent     string    `json:"UserAgent"`
-	Accounts      []Account `json:"Accounts"`
+	ListenerAddress string    `json:"ListenerAddress"`
+	IpRetrieveUrl   string    `json:"IpRetrieveUrl"`
+	UserAgent       string    `json:"UserAgent"`
+	Accounts        []Account `json:"Accounts"`
 }
 
 type Account struct {
