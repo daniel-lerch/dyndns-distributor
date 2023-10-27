@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"os"
 )
 
@@ -26,7 +26,7 @@ func LoadSettings() (*Settings, error) {
 	if err != nil {
 		return settings, err
 	} else {
-		buffer, err := ioutil.ReadAll(file)
+		buffer, err := io.ReadAll(file)
 		if err != nil {
 			return settings, err
 		} else {

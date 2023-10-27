@@ -1,4 +1,4 @@
-FROM golang:1-alpine3.17 AS build-env
+FROM golang:1-alpine3.18 AS build-env
 WORKDIR /app
 
 # Copy go.mod and go.sum and download as distinct layers
@@ -10,7 +10,7 @@ COPY . ./
 RUN go build -o /app/dyndns-distributor
 
 # Build runtime image
-FROM alpine:3.17
+FROM alpine:3.18
 WORKDIR /app
 ENV GIN_MODE=release
 COPY --from=build-env /app/dyndns-distributor .

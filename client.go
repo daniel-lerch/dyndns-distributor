@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -39,7 +39,7 @@ func (c *DynClient) Update(urlTemplate string, ip net.IP) (string, string, error
 	}
 
 	defer response.Body.Close()
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return "", urlWithoutPassword, err
 	}
@@ -59,7 +59,7 @@ func (c *DynClient) GetExternalIp(ipRetrieveUrl string) (net.IP, error) {
 	}
 
 	defer response.Body.Close()
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
