@@ -7,17 +7,20 @@ import (
 )
 
 type Settings struct {
-	ListenerAddress string    `json:"ListenerAddress"`
-	IpRetrieveUrl   string    `json:"IpRetrieveUrl"`
-	UserAgent       string    `json:"UserAgent"`
-	Accounts        []Account `json:"Accounts"`
-}
-
-type Account struct {
+	ListenerAddress string   `json:"ListenerAddress"`
+	IpRetrieveUrl   string   `json:"IpRetrieveUrl"`
+	UserAgent       string   `json:"UserAgent"`
+	UpdateOnStartup bool     `json:"UpdateOnStartup"`
 	Username        string   `json:"Username"`
 	Password        string   `json:"Password"`
-	UpdateOnStartup bool     `json:"UpdateOnStartup"`
-	UpdateUrls      []string `json:"UpdateUrls"`
+	Records         []Record `json:"Records"`
+}
+
+type Record struct {
+	UpdateUrl string   `json:"UpdateUrl"`
+	Method    string   `json:"Method"`
+	Headers   []string `json:"Headers"`
+	Body      string   `json:"Body"`
 }
 
 func LoadSettings() (*Settings, error) {

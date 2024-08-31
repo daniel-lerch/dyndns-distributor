@@ -1,16 +1,24 @@
 {
   "ListenerAddress": "localhost:8080",
   "IpRetrieveUrl": "https://api.ipify.org/",
-  "UserAgent": "VectorData - DynDNS Distributor - 3.0",
-  "Accounts": [
+  "UserAgent": "DynDNS Distributor - 4.0",
+  "UpdateOnStartup": true,
+  "Username": "proxyuser",
+  "Password": "localnetpw123",
+  "Records": [
     {
-      "Username": "proxyuser",
-      "Password": "localnetpw123",
-      "UpdateOnStartup": true,
-      "UpdateUrls": [
-        "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=test.feste-ip.net",
-        "https://username:password@dyndns.example.com/update?hostname=mydomain.de&myip=<ipaddr>"
-      ]
+      "UpdateUrl": "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=test.feste-ip.net"
+    },
+    {
+      "UpdateUrl": "https://username:password@dyndns.example.com/update?hostname=mydomain.de&myip=<ipaddr>"
+    },
+    {
+      "UpdateUrl": "https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records/{dns_record_id}",
+      "Method": "PATCH",
+      "Headers": [
+        "Authorization: Bearer {api_token}"
+      ],
+      "Body": "{\"content\":\"<ipaddr>\"}"
     }
   ]
 }

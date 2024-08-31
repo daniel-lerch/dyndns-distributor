@@ -23,17 +23,11 @@ func (h *UpdateHandler) Handle(c *gin.Context) {
 		return
 	}
 
-	account, exists := c.Get("account")
-	if !exists {
-		c.String(500, "An unexpected error occured in the authentication middleware")
-		return
-	}
-
 	successfulUpdates := 0
 
-	for _, updateUrlTemplate := range h.settings.Accounts[account.(int)].UpdateUrls {
+	for _, record := range h.settings.Records {
 
-		body, loggingUrl, err := h.client.Update(updateUrlTemplate, ip)
+		body, loggingUrl, err := h.client.Update(record, ip)
 		if err != nil {
 			c.Error(err)
 			continue
@@ -47,5 +41,5 @@ func (h *UpdateHandler) Handle(c *gin.Context) {
 		fmt.Println(string(body))
 	}
 
-	c.String(200, "Successfully updated %d of %d domains", successfulUpdates, len(h.settings.Accounts[account.(int)].UpdateUrls))
+	c.String(200, "Successfully updated %d of %d records", successfulUpdates, len(h.settings.Records))
 }

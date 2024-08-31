@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"io"
 	"net"
 	"net/http"
@@ -16,11 +17,12 @@ func NewDynClient() *DynClient {
 	return &DynClient{&http.Client{}}
 }
 
-func (c *DynClient) Update(urlTemplate string, ip net.IP) (string, string, error) {
+func (c *DynClient) Update(record Record, ip net.IP) (string, string, error) {
 
-	updateUrl := strings.ReplaceAll(urlTemplate, "<ipaddr>", ip.String())
+	record.UpdateUrl = strings.ReplaceAll(record.UpdateUrl, "<ipaddr>", ip.String())
+	record.Body = strings.ReplaceAll(record.Body, "<ipaddr>", ip.String())
 
-	parsedUrl, err := url.Parse(updateUrl)
+	parsedUrl, err := url.Parse(record.UpdateUrl)
 	if err != nil {
 		return "", "", err
 	}
@@ -28,7 +30,12 @@ func (c *DynClient) Update(urlTemplate string, ip net.IP) (string, string, error
 	parsedUrl.User = url.UserPassword(parsedUrl.User.Username(), "***")
 	urlWithoutPassword := strings.ReplaceAll(parsedUrl.String(), "%2A%2A%2A", "***")
 
-	request, err := http.NewRequest("GET", updateUrl, nil)
+	method := record.Method
+	if method == "" {
+		method = "GET"
+	}
+
+	request, err := http.NewRequest(method, record.UpdateUrl, strings.NewReader(record.Body))
 	if err != nil {
 		return "", urlWithoutPassword, err
 	}
@@ -42,6 +49,10 @@ func (c *DynClient) Update(urlTemplate string, ip net.IP) (string, string, error
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return "", urlWithoutPassword, err
+	}
+
+	if response.StatusCode < 200 || response.StatusCode >= 300 {
+		return string(body), urlWithoutPassword, errors.New(method + " " + urlWithoutPassword + " returned " + response.Status + ": " + string(body))
 	}
 
 	return string(body), urlWithoutPassword, nil

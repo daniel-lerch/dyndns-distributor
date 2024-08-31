@@ -36,20 +36,18 @@ func UpdateOnStartup(settings *Settings, client *DynClient) {
 		return
 	}
 
-	for _, account := range settings.Accounts {
-		if account.UpdateOnStartup {
-			for _, updateUrlTemplate := range account.UpdateUrls {
-				body, loggingUrl, err := client.Update(updateUrlTemplate, ip)
+	if settings.UpdateOnStartup {
+		for _, record := range settings.Records {
+			body, loggingUrl, err := client.Update(record, ip)
 
-				fmt.Print(loggingUrl)
-				fmt.Println(":")
-				fmt.Print("\t")
+			fmt.Print(loggingUrl)
+			fmt.Println(":")
+			fmt.Print("\t")
 
-				if err == nil {
-					fmt.Println(body)
-				} else {
-					fmt.Println(err)
-				}
+			if err == nil {
+				fmt.Println(body)
+			} else {
+				fmt.Println(err)
 			}
 		}
 	}
