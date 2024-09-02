@@ -13,7 +13,7 @@ func main() {
 		return
 	}
 
-	client := NewDynClient()
+	client := NewDynClient(settings.UserAgent)
 
 	UpdateOnStartup(settings, client)
 

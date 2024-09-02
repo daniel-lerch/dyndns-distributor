@@ -10,11 +10,12 @@ import (
 )
 
 type DynClient struct {
-	client *http.Client
+	client    *http.Client
+	userAgent string
 }
 
-func NewDynClient() *DynClient {
-	return &DynClient{&http.Client{}}
+func NewDynClient(userAgent string) *DynClient {
+	return &DynClient{&http.Client{}, userAgent}
 }
 
 func (c *DynClient) Update(record Record, ip net.IP) (string, string, error) {
@@ -38,6 +39,15 @@ func (c *DynClient) Update(record Record, ip net.IP) (string, string, error) {
 	request, err := http.NewRequest(method, record.UpdateUrl, strings.NewReader(record.Body))
 	if err != nil {
 		return "", urlWithoutPassword, err
+	}
+
+	request.Header.Set("User-Agent", c.userAgent)
+	for _, header := range record.Headers {
+		name, value, found := strings.Cut(header, ": ")
+		if !found {
+			return "", urlWithoutPassword, errors.New("Invalid header: " + header)
+		}
+		request.Header.Set(name, value)
 	}
 
 	response, err := c.client.Do(request)
