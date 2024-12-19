@@ -11,14 +11,12 @@ If you want to update multiple hostnames, just configure DynDNS Distributor as u
 ## Installation ##
 
 Installation is easiest with Docker Compose.
-Create a `docker-compose.yml` file with the following content and move on to configuration (next heading) before start. 
+Create a `compose.yaml` file with the following content and move on to configuration (next heading) before start. 
 
 ```yaml
-version: '2.1'
-
 services:
   app:
-    image: daniellerch/dyndns-distributor:3
+    image: daniellerch/dyndns-distributor:4
     volumes:
       - ./dyndnsconfig.json:/app/dyndnsconfig.json
     ports:
@@ -32,18 +30,26 @@ The configuration of update URLs, accounts and credentials is done in the file `
 Per default, the configuration looks like this:
 ```json
 {
-  "ListenerAddress": ":8080",
+  "ListenerAddress": "localhost:8080",
   "IpRetrieveUrl": "https://api.ipify.org/",
-  "UserAgent": "VectorData - DynDNS Distributor - 3.0",
-  "Accounts": [
+  "UserAgent": "DynDNS Distributor - 4.0",
+  "UpdateOnStartup": true,
+  "Username": "proxyuser",
+  "Password": "localnetpw123",
+  "Records": [
     {
-      "Username": "proxyuser",
-      "Password": "localnetpw123",
-      "UpdateOnStartup": true,
-      "UpdateUrls": [
-        "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=test.feste-ip.net",
-        "https://username:password@dyndns.example.com/update?hostname=mydomain.de&myip=<ipaddr>"
-      ]
+      "UpdateUrl": "https://13135:7sN2KS6L8W@members.feste-ip.net/nic/update?hostname=test.feste-ip.net"
+    },
+    {
+      "UpdateUrl": "https://username:password@dyndns.example.com/update?hostname=mydomain.de&myip=<ipaddr>"
+    },
+    {
+      "UpdateUrl": "https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records/{dns_record_id}",
+      "Method": "PATCH",
+      "Headers": [
+        "Authorization: Bearer {api_token}"
+      ],
+      "Body": "{\"content\":\"<ipaddr>\"}"
     }
   ]
 }
@@ -60,11 +66,16 @@ An URL to retrieve the extern IP address for local accounts.
 The user agent that will be used for DNS updates.
 Some providers, like strato.de or dyn.com require a specific user agent.
 
-#### `Accounts` ####
-An array that contains all account objects.
-Each account has fields for `Username`, `Password` and another array `UpdateUrls`.
-Setting `Username` and `Password` to `""` disables authentication.
-Set `UpdateOnStartup` to `false` for domains which should have a different external IP than the server that runs DynDNS Distributor.
+#### `Username` & `Password` ####
+Credentials for basic authentication. Setting `Username` and `Password` to `""` disables authentication.
+
+> ⚠️ Note that an attacker in your local network can still capture packets sent from your router to the device running DynDNS Distributor and thereby gain access to change your DNS records to arbitrary IP addresses, generate valid TLS certificates, and so on. Basic authentication just makes it harder because the attacker must wait for some hours or days until an IP address change happens.
+
+#### `UpdateOnStartup` ####
+If set to `true`, DynDNS Distributor will query `IpRetrieveUrl` on startup and update all records according to its value.
+
+#### `Records` ####
+An array of records to update which must at least have a `UpdateUrl`. More sophisticated requests as required for Cloudflare are supported since DynDNS Distributor 4, too.
 
 ## AVM Fritz!Box ##
 If you use a Fritz!Box as router, you have to configure the following update URL:
@@ -83,7 +94,7 @@ In the username and password field, please fill in the same values as in your co
 
 Recommended setup:
 - Git
-- Go 1.19+
+- Go 1.23+
 - VS Code with Go extension
 
 Run it locally:
